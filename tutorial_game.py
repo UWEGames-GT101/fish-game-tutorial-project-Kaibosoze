@@ -4,8 +4,11 @@ from gamedata import GameData
 
 
 def isInside(sprite, mouse_x, mouse_y) -> bool:
-    pass
+    bounds = sprite.getWorldBounds()
 
+    if bounds.v1.x < mouse_x < bounds.v2.x and bounds.v1.y < mouse_y < bounds.v3.y:
+        return True
+    return False
 
 class MyASGEGame(pyasge.ASGEGame):
     """
@@ -65,8 +68,7 @@ class MyASGEGame(pyasge.ASGEGame):
         if self.fish.loadTexture("/data/images/kenney_fishpack/fishTile_073.png"):
             self.fish.z_order = 1
             self.fish.scale = 1
-            self.fish.x = 300
-            self.fish.y = 300
+            self.spawn()
             return True
         return False
 
@@ -92,7 +94,12 @@ class MyASGEGame(pyasge.ASGEGame):
         return True
 
     def clickHandler(self, event: pyasge.ClickEvent) -> None:
-        pass
+        if event.action == pyasge.MOUSE.BUTTON_PRESSED and \
+            event.button == pyasge.MOUSE.MOUSE_BTN1:
+
+            if isInside(self.fish, event.x, event.y):
+                self.data.score += 1
+                self.spawn()
 
     def keyHandler(self, event: pyasge.KeyEvent) -> None:
         if event.action == pyasge.KEYS.KEY_PRESSED:
@@ -116,7 +123,11 @@ class MyASGEGame(pyasge.ASGEGame):
                 self.signalExit()
 
     def spawn(self) -> None:
-        pass
+        x = random.randint(0, self.data.game_res[0] - self.fish.width)
+        y = random.randint(0, self.data.game_res[1] - self.fish.height)
+
+        self.fish.x = x
+        self.fish.y = y
 
     def update(self, game_time: pyasge.GameTime) -> None:
 
