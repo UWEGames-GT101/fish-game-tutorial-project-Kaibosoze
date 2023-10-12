@@ -62,7 +62,13 @@ class MyASGEGame(pyasge.ASGEGame):
             return False
 
     def initFish(self) -> bool:
-        pass
+        if self.fish.loadTexture("/data/images/kenney_fishpack/fishTile_073.png"):
+            self.fish.z_order = 1
+            self.fish.scale = 1
+            self.fish.x = 300
+            self.fish.y = 300
+            return True
+        return False
 
     def initScoreboard(self) -> None:
         pass
@@ -89,7 +95,25 @@ class MyASGEGame(pyasge.ASGEGame):
         pass
 
     def keyHandler(self, event: pyasge.KeyEvent) -> None:
-        pass
+        if event.action == pyasge.KEYS.KEY_PRESSED:
+            if event.key == pyasge.KEYS.KEY_RIGHT or event.key == pyasge.KEYS.KEY_LEFT:
+                self.menu_option = 1 - self.menu_option
+                if self.menu_option == 0:
+                    self.play_option.string = ">START"
+                    self.play_option.colour = pyasge.COLOURS.HOTPINK
+                    self.exit_option.string = "EXIT"
+                    self.exit_option.colour = pyasge.COLOURS.LIGHTSLATEGREY
+                else:
+                    self.play_option.string = "START"
+                    self.play_option.colour = pyasge.COLOURS.LIGHTSLATEGREY
+                    self.exit_option.string = ">EXIT"
+                    self.exit_option.colour = pyasge.COLOURS.HOTPINK
+
+        if event.key == pyasge.KEYS.KEY_ENTER:
+            if self.menu_option == 0:
+                self.menu = False
+            else:
+                self.signalExit()
 
     def spawn(self) -> None:
         pass
@@ -110,17 +134,17 @@ class MyASGEGame(pyasge.ASGEGame):
         ``frame_time`` is essential to ensure consistent performance.
         @param game_time: The tick and frame deltas.
         """
+        self.data.renderer.render(self.data.background)
 
         if self.menu:
             # render the menu here
-            self.data.renderer.render(self.data.background)
             self.data.renderer.render(self.menu_text)
 
             self.data.renderer.render(self.play_option)
             self.data.renderer.render(self.exit_option)
         else:
             # render the game here
-            pass
+            self.data.renderer.render(self.fish)
 
 
 def main():
